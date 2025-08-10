@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from firebase import db
+from .firebase import db
 
 app = FastAPI()
 

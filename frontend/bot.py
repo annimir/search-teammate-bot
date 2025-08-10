@@ -1,15 +1,18 @@
+import os
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from dotenv import load_dotenv
 import requests
 
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text("Привет! Я бот.")
+load_dotenv()
 
-def get_data(update: Update, context: CallbackContext):
-    response = requests.get("http://server:8000/items/123")
-    update.message.reply_text(f"Данные: {response.json()}")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(f'Hello {update.effective_user.first_name}')
 
-updater = Updater("YOUR_TELEGRAM_BOT_TOKEN")
-updater.dispatcher.add_handler(CommandHandler("start", start))
-updater.dispatcher.add_handler(CommandHandler("data", get_data))
-updater.start_polling()
+async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(f'Hello {update.effective_user.first_name}')
+
+app = ApplicationBuilder().token(os.getenv("BOT_TOKEN")).build()
+app.add_handler(CommandHandler("hello", hello))
+app.add_handler(CommandHandler("start", start))
+app.run_polling()
